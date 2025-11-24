@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+ xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+ <changeSet id="913b2d17fc311136a235a5c5061255b57fd2486b" author="(ADMIN)-Generated" failOnError="true"    runOnChange="false"  runAlways="false"  runInTransaction="false"  >
+  <n0:createOraclePackageBody objectName="KTN_AR_ATTACHMENTS_UTILS_PKG" objectType="PACKAGE_BODY" ownerName="ADMIN"  replaceIfExists="false" >
+    <n0:source><![CDATA[CREATE OR REPLACE EDITIONABLE PACKAGE BODY "%USER_NAME%"."KTN_AR_ATTACHMENTS_UTILS_PKG" As
+-- test
+PROCEDURE check_attachment_length (
+    p_ext_doc_id IN  VARCHAR2,
+    output       OUT NUMBER,
+    x_msg        OUT NOCOPY   CLOB)
+    As
+    v_header_output Number;
+    v_line_output Number;
+    CURSOR header_cur IS 
+    SELECT 1 
+     FROM ktn_ar_attachemnts_stg
+     WHERE ext_doc_number= p_ext_doc_id
+     AND length(Descriptionn) > 1760
+     AND attachment_type = 'HEADER'
+     AND ROWNUM = 1;
+    CURSOR lines_cur IS  SELECT LINE_NUMBER 
+    FROM ktn_ar_attachemnts_stg
+    WHERE ext_doc_number= p_ext_doc_id
+    AND length(Descriptionn) > 750
+    AND attachment_type = 'LINE'
+    AND ROWNUM = 1;
+BEGIN
+ output := 0;
+ v_header_output:=0;
+ v_line_output:=0;
+ OPEN header_cur;
+ LOOP 
+   FETCH header_cur INTO v_header_output;
+     EXIT WHEN header_cur%notfound;
+ END LOOP;
+ CLOSE header_cur;
+   output:= v_header_output;
+ --DBMS_OUTPUT.PUT_LINE('header output-1'||output);
+ IF output='1' THEN
+ --DBMS_OUTPUT.PUT_LINE('header output IF'||output);
+ x_msg := 'Error: The Header attachment length is exceeding 1760 Char, please correct and resubmit the invoice';
+ ELSE
+  DBMS_OUTPUT.PUT_LINE('else header part'||output);
+  OPEN lines_cur;
+ LOOP 
+   FETCH lines_cur INTO v_line_output;
+     EXIT WHEN lines_cur%notfound;
+ END LOOP;
+ CLOSE lines_cur;
+   output:= v_line_output;
+ DBMS_OUTPUT.PUT_LINE('Line output is'||output);
+  IF output IS NOT NULL and output!='0' THEN
+ DBMS_OUTPUT.PUT_LINE('IF v_line_output null executed'||output);
+ x_msg := 'Error , The Line attachment length is exceeding 750 Char, please correct Line-No:' || output;
+--DBMS_OUTPUT.PUT_LINE('header output'||output); */
+output := 1;
+END IF;
+END IF;
+ -- DBMS_OUTPUT.PUT_LINE('after if'||output);
+EXCEPTION
+      WHEN OTHERS
+      THEN
+         output := 0;
+         x_msg := '';
+END check_attachment_length;
+
+PROCEDURE check_attachment_length_CN (
+    p_ext_doc_id IN  VARCHAR2,
+    output       OUT NUMBER,
+    x_msg        OUT NOCOPY   CLOB)
+    As
+    v_header_output Number;
+    v_line_output Number;
+    CURSOR header_cur IS 
+    SELECT 1 
+     FROM ktn_ar_attachemnts_stg
+     WHERE ext_doc_number= p_ext_doc_id
+     AND length(Descriptionn) > 300
+     AND attachment_type = 'HEADER'
+     AND ROWNUM = 1;
+    CURSOR lines_cur IS  SELECT LINE_NUMBER 
+    FROM ktn_ar_attachemnts_stg
+    WHERE ext_doc_number= p_ext_doc_id
+    AND length(Descriptionn) > 750
+    AND attachment_type = 'LINE'
+    AND ROWNUM = 1;
+BEGIN
+ output := 0;
+ v_header_output:=0;
+ v_line_output:=0;
+ OPEN header_cur;
+ LOOP 
+   FETCH header_cur INTO v_header_output;
+     EXIT WHEN header_cur%notfound;
+ END LOOP;
+ CLOSE header_cur;
+   output:= v_header_output;
+ --DBMS_OUTPUT.PUT_LINE('header output-1'||output);
+ IF output='1' THEN
+ --DBMS_OUTPUT.PUT_LINE('header output IF'||output);
+ x_msg := 'Error: The Header attachment length is exceeding 300 Char, please correct and resubmit the invoice';
+ ELSE
+  DBMS_OUTPUT.PUT_LINE('else header part'||output);
+  OPEN lines_cur;
+ LOOP 
+   FETCH lines_cur INTO v_line_output;
+     EXIT WHEN lines_cur%notfound;
+ END LOOP;
+ CLOSE lines_cur;
+   output:= v_line_output;
+ DBMS_OUTPUT.PUT_LINE('Line output is'||output);
+  IF output IS NOT NULL and output!='0' THEN
+ DBMS_OUTPUT.PUT_LINE('IF v_line_output null executed'||output);
+ x_msg := 'Error , The Line attachment length is exceeding 750 Char, please correct Line-No:' || output;
+--DBMS_OUTPUT.PUT_LINE('header output'||output); */
+output := 1;
+END IF;
+END IF;
+ -- DBMS_OUTPUT.PUT_LINE('after if'||output);
+EXCEPTION
+      WHEN OTHERS
+      THEN
+         output := 0;
+         x_msg := '';
+END check_attachment_length_CN;
+PROCEDURE delete_duplicate_attachment (
+    p_ext_doc_id IN  VARCHAR2,
+    output       OUT NUMBER)
+     As
+
+BEGIN
+ -- delete duplicate Lines
+
+DELETE FROM ktn_ar_attachemnts_stg WHERE ROWID IN(SELECT TEMP.ROWID FROM(
+SELECT ROWID,ATTACHMENT_TYPE, EXT_DOC_NUMBER, LINE_NUMBER,DESCRIPTION,DESCRIPTIONN,PROCESS_FLAG,
+ROW_NUMBER()OVER (PARTITION BY line_number ORDER BY ROWID DESC) RN  FROM ktn_ar_attachemnts_stg where ext_doc_number=p_ext_doc_id and attachment_type='LINE'
+)TEMP
+WHERE TEMP.RN <> 1 AND ext_doc_number=p_ext_doc_id);
+
+-- delete duplicate Header
+
+DELETE FROM ktn_ar_attachemnts_stg WHERE ROWID IN(SELECT TEMP.ROWID FROM(
+SELECT ROWID,ATTACHMENT_TYPE, EXT_DOC_NUMBER, LINE_NUMBER,DESCRIPTION,DESCRIPTIONN,PROCESS_FLAG,
+ROW_NUMBER()OVER (PARTITION BY to_char(descriptionn) ORDER BY ROWID DESC) RN  FROM ktn_ar_attachemnts_stg where ext_doc_number=p_ext_doc_id and attachment_type='HEADER'
+)TEMP
+WHERE TEMP.RN <> 1 AND ext_doc_number=p_ext_doc_id);
+
+--
+-- delete duplicate URL
+
+---- test
+
+DELETE FROM ktn_ar_attachemnts_stg WHERE ROWID IN(SELECT TEMP.ROWID FROM(
+SELECT ROWID,ATTACHMENT_TYPE, EXT_DOC_NUMBER, LINE_NUMBER,DESCRIPTION,DESCRIPTIONN,PROCESS_FLAG,
+ROW_NUMBER()OVER (PARTITION BY to_char(descriptionn) ORDER BY ROWID DESC) RN  FROM ktn_ar_attachemnts_stg where ext_doc_number=p_ext_doc_id and attachment_type='URL'
+)TEMP
+WHERE TEMP.RN <> 1 AND ext_doc_number=p_ext_doc_id);
+
+-- update process flag
+UPDATE ktn_ar_attachemnts_stg
+SET PROCESS_FLAG=null
+WHERE EXT_DOC_NUMBER=p_ext_doc_id;
+output:=0;
+END delete_duplicate_attachment;
+END KTN_AR_ATTACHMENTS_UTILS_PKG;
+/]]></n0:source>
+      </n0:createOraclePackageBody>
+ </changeSet>
+</databaseChangeLog>

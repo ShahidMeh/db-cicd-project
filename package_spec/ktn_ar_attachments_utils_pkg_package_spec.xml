@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+ xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+ <changeSet id="9513844e356d8fffa68bc1db2f204c60e6171dc6" author="(ADMIN)-Generated" failOnError="true"    runOnChange="false"  runAlways="false"  runInTransaction="false"  >
+  <n0:createOraclePackageSpec objectName="KTN_AR_ATTACHMENTS_UTILS_PKG" objectType="PACKAGE_SPEC" ownerName="ADMIN"  replaceIfExists="false" >
+    <n0:source><![CDATA[CREATE OR REPLACE EDITIONABLE PACKAGE "%USER_NAME%"."KTN_AR_ATTACHMENTS_UTILS_PKG" is
+-- updated to test liquibase
+PROCEDURE check_attachment_length (
+    p_ext_doc_id     IN  VARCHAR2 DEFAULT 0,
+    output       OUT NUMBER,
+    x_msg        OUT NOCOPY   CLOB);
+
+PROCEDURE check_attachment_length_CN (
+    p_ext_doc_id     IN  VARCHAR2 DEFAULT 0,
+    output       OUT NUMBER,
+    x_msg        OUT NOCOPY   CLOB);
+
+PROCEDURE delete_duplicate_attachment (
+    p_ext_doc_id     IN  VARCHAR2 DEFAULT 0,
+    output       OUT NUMBER);
+
+end KTN_AR_ATTACHMENTS_UTILS_PKG;
+/]]></n0:source>
+      </n0:createOraclePackageSpec>
+ </changeSet>
+</databaseChangeLog>

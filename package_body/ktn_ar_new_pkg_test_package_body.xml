@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+ xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+ <changeSet id="f0b813993773f7582da1186eaa221fca91a8750c" author="(ADMIN)-Generated" failOnError="true"    runOnChange="false"  runAlways="false"  runInTransaction="false"  >
+  <n0:createOraclePackageBody objectName="KTN_AR_NEW_PKG_TEST" objectType="PACKAGE_BODY" ownerName="ADMIN"  replaceIfExists="false" >
+    <n0:source><![CDATA[CREATE OR REPLACE EDITIONABLE PACKAGE BODY "%USER_NAME%"."KTN_AR_NEW_PKG_TEST" AS
+
+  PROCEDURE new_procedure(p_ext_doc_id IN VARCHAR2, output OUT NUMBER) AS
+   i NUMBER := 60;  -- define a simple variable
+  BEGIN
+    output := 20 + i;  -- simple calculation
+  END new_procedure;
+
+END KTN_AR_NEW_PKG_TEST;
+/]]></n0:source>
+      </n0:createOraclePackageBody>
+ </changeSet>
+</databaseChangeLog>

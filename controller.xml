@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+-->
+<databaseChangeLog 
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <include file="sequence/dbtools$execution_history_seq_sequence.xml"/> 
+  <include file="directory/data_pump_dir_directory.xml"/> 
+  <include file="directory/sql_tcb_dir_directory.xml"/> 
+  <include file="table/dbtools$execution_history_table.xml"/> 
+  <include file="table/__efmigrationshistory_table.xml"/> 
+  <include file="table/ktn_ar_attachemnts_stg_table.xml"/> 
+  <include file="table/products_table.xml"/> 
+  <include file="package_spec/ktn_ar_attachments_utils_pkg_package_spec.xml"/> 
+  <include file="package_spec/ktn_ar_new_pkg_test_package_spec.xml"/> 
+  <include file="package_body/ktn_ar_new_pkg_test_package_body.xml"/> 
+  <include file="package_body/ktn_ar_attachments_utils_pkg_package_body.xml"/> 
+  <include file="job/pipeline$1_job.xml"/> 
+  <include file="job/pipeline$2_job.xml"/> 
+</databaseChangeLog> 
